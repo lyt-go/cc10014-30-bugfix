@@ -34,5 +34,8 @@ def health() -> dict[str, object]:
 
 @app.get("/api/overview")
 def overview() -> dict[str, object]:
-    """运营概览：把各业务模块的待处理量汇总成看板卡片。"""
-    return store.overview()
+    """运营概览：把各业务模块的待处理量汇总成看板卡片，并附结构版本诊断摘要。"""
+    from app.services.schema_version_view import SchemaVersionViewService
+    data = store.overview()
+    data["schema_version_summary"] = SchemaVersionViewService().summary()
+    return data

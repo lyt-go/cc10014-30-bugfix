@@ -214,6 +214,7 @@ SEED_ROWS: dict[str, list[dict[str, Any]]] = {
          "字段类型": "STRING,TIMESTAMP,STRING,STRING", "可空标识": "N,N,N,N",
          "默认值": ",,,", "定义版本": "v1", "生效批次": "RAW-20261103"},
     ],
+    "schema_version_view": [],
     "data_publish": [
         {"id": 1, "status": "已发布", "pending": False, "abnormal": False,
          "版本编号": "PUB-ORD-001", "数据集名称": "dws_order_daily", "发布范围": "内部BI",

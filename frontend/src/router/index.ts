@@ -16,6 +16,7 @@ const LineageTrack = () => import('@/views/lineage_track/index.vue')
 const BackfillJob = () => import('@/views/backfill_job/index.vue')
 const TableCompare = () => import('@/views/table_compare/index.vue')
 const SchemaRegistry = () => import('@/views/schema_registry/index.vue')
+const SchemaVersionView = () => import('@/views/schema_version_view/index.vue')
 const DataPublish = () => import('@/views/data_publish/index.vue')
 const TransformDag = () => import('@/views/transform_dag/index.vue')
 const ColdArchive = () => import('@/views/cold_archive/index.vue')
@@ -39,6 +40,7 @@ const router = createRouter({
     { path: '/backfill_job', name: 'backfill_job', component: BackfillJob },
     { path: '/table_compare', name: 'table_compare', component: TableCompare },
     { path: '/schema_registry', name: 'schema_registry', component: SchemaRegistry },
+    { path: '/schema_version_view', name: 'schema_version_view', component: SchemaVersionView },
     { path: '/data_publish', name: 'data_publish', component: DataPublish },
     { path: '/transform_dag', name: 'transform_dag', component: TransformDag },
     { path: '/cold_archive', name: 'cold_archive', component: ColdArchive },

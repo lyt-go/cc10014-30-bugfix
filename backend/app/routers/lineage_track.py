@@ -45,6 +45,21 @@ def export_entries() -> StreamingResponse:
                              headers={"Content-Disposition": "attachment; filename=lineage_track.csv"})
 
 
+@router.get("/schema_view/{table_name}")
+def schema_view_for_table(table_name: str) -> dict[str, Any]:
+    """血缘详情联动：按表名读取结构版本诊断视图与当前版本解析结果。"""
+    from app.services.schema_registry import SchemaRegistryService
+    from app.services.schema_version_view import SchemaVersionViewService
+    resolution = SchemaRegistryService().resolve_current_entry(table_name)
+    return {
+        "表名称": table_name,
+        "当前版本": resolution["当前版本"] if resolution else "",
+        "当前来源": resolution["当前来源"] if resolution else "",
+        "冲突": resolution["冲突"] if resolution else None,
+        "items": SchemaVersionViewService().list_for_table(table_name),
+    }
+
+
 @router.get("/{entry_id}")
 def get_entry(entry_id: int) -> dict:
     entry = service.get_entry(entry_id)

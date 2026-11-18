@@ -24,6 +24,14 @@
       <dl><dt>编号</dt><dd>{{ selectedNode.id }}</dd></dl>
       <dl><dt>名称</dt><dd>{{ selectedNode.name || selectedNode.label }}</dd></dl>
       <dl v-for="f in detailFields" :key="f"><dt>{{ f }}</dt><dd>{{ selectedNode[f] ?? '—' }}</dd></dl>
+      <div class="schema-version-info" data-testid="schema-version-info" style="grid-column:1/-1">
+        <template v-if="schemaInfo">
+          <dl><dt>当前版本</dt><dd>{{ schemaInfo['当前版本'] || '—' }}</dd></dl>
+          <dl><dt>当前来源</dt><dd>{{ schemaInfo['当前来源'] || '—' }}</dd></dl>
+          <dl><dt>版本冲突</dt><dd>{{ schemaInfo['冲突'] ? `${schemaInfo['冲突']['边界']}·${schemaInfo['冲突']['处理']}` : '无冲突' }}</dd></dl>
+        </template>
+        <RouterLink class="link" to="/schema_version_view" data-testid="open-schema-version-view">结构版本诊断视图</RouterLink>
+      </div>
       <div style="grid-column:1/-1; margin-top:8px; display:flex; gap:6px;">
         <button v-for="action in actions" :key="action" class="btn" :data-testid="`action-${selectedNode.id}-${action}`" @click="runAction(action, selectedNode)">{{ action }}</button>
       </div>
@@ -52,6 +60,7 @@ const nodeColor = (s: string) => STATUS_COLORS[s] || '#e2e8f0'
 const graph = reactive<{nodes: any[], edges: any[]}>({ nodes: [], edges: [] })
 const nodePos = ref<Record<number,{x:number;y:number}>>({})
 const selectedNode = ref<any>(null)
+const schemaInfo = ref<any>(null)
 const detailFields = computed(() => columns.filter((f: string) => !['id','name','label','status'].includes(f)))
 const svgW = ref(800); const svgH = ref(400)
 const errorMessage = ref('')
@@ -65,7 +74,17 @@ function layout(nodes: any[]) {
   nodes.forEach((n,i) => { pos[n.id] = { x: 120 + (i % 5) * 150, y: 50 + Math.floor(i / 5) * 80 } })
   nodePos.value = pos
 }
-function selectNode(node: any) { selectedNode.value = selectedNode.value?.id === node.id ? null : node }
+function selectNode(node: any) {
+  selectedNode.value = selectedNode.value?.id === node.id ? null : node
+  schemaInfo.value = null
+  if (selectedNode.value) void loadSchemaInfo(selectedNode.value.name)
+}
+async function loadSchemaInfo(tableName: string) {
+  try {
+    const res = await request(`${ENDPOINT}/schema_view/${encodeURIComponent(tableName)}`)
+    if (res.ok) schemaInfo.value = await res.json()
+  } catch { /* 无诊断数据时保持为空 */ }
+}
 function startDrag(e: MouseEvent, node: any) { dragNode = node; const onMove = (ev: MouseEvent) => { if(!dragNode) return; nodePos.value[node.id] = { x: ev.offsetX, y: ev.offsetY } }; const onUp = () => { dragNode = null; document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp) }; document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp) }
 async function reload() {
   try { const res = await request(ENDPOINT); const data = await res.json(); graph.nodes = data.nodes || []; graph.edges = data.edges || []; layout(graph.nodes) } catch(e) { errorMessage.value = '加载失败' }

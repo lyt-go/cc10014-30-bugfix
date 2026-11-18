@@ -21,8 +21,9 @@ from app.routers import lineage_track as router_lineage_track
 from app.routers import backfill_job as router_backfill_job
 from app.routers import table_compare as router_table_compare
 from app.routers import schema_registry as router_schema_registry
+from app.routers import schema_version_view as router_schema_version_view
 from app.routers import data_publish as router_data_publish
 from app.routers import transform_dag as router_transform_dag
 from app.routers import cold_archive as router_cold_archive
 
-ROUTERS = [router_raw_ingest, router_column_mapping, router_cleanse_rule, router_dedup_config, router_ods_layer, router_dwd_layer, router_dws_layer, router_dim_model, router_snapshot_mgr, router_partition_mgr, router_quality_check, router_lineage_track, router_backfill_job, router_table_compare, router_schema_registry, router_data_publish, router_transform_dag, router_cold_archive]
+ROUTERS = [router_raw_ingest, router_column_mapping, router_cleanse_rule, router_dedup_config, router_ods_layer, router_dwd_layer, router_dws_layer, router_dim_model, router_snapshot_mgr, router_partition_mgr, router_quality_check, router_lineage_track, router_backfill_job, router_table_compare, router_schema_registry, router_schema_version_view, router_data_publish, router_transform_dag, router_cold_archive]

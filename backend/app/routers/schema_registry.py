@@ -65,6 +65,25 @@ def export_entries(
         headers={"Content-Disposition": 'attachment; filename="schema_registry.csv"'})
 
 
+@router.get("/current/{table_name}", response_model=dict)
+def get_current_schema(table_name: str) -> dict:
+    """按语义版本解析同名表的当前结构，结果与结构版本诊断视图一致。"""
+    resolution = service.resolve_current_entry(table_name)
+    if resolution is None:
+        raise HTTPException(status_code=404, detail=f"表 {table_name} 暂无结构定义")
+    return resolution
+
+
+@router.post("/derive/{table_name}", response_model=ActionResult)
+def derive_schema(table_name: str, payload: dict[str, object] | None = None) -> ActionResult:
+    """按血缘链路推导同名表的下一个结构版本，版本号基于语义版本递增。"""
+    business_date = str((payload or {}).get("业务日期") or "").strip() or None
+    entry = service.derive_schema_from_lineage(table_name, business_date=business_date)
+    if entry is None:
+        return ActionResult(ok=False, message=f"表 {table_name} 缺少上游血缘或上游结构，无法推导")
+    return ActionResult(ok=True, message=f"已按血缘推导结构版本 {entry.get('定义版本')}", entry=entry)
+
+
 @router.get("/{entry_id}", response_model=dict)
 def get_entry(entry_id: int) -> dict:
     """读取单条结构定义明细；不存在时给出可读的错误说明。"""

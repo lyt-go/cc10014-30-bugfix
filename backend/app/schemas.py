@@ -216,6 +216,19 @@ class SchemaRegistryEntry(BaseModel):
     field_6: str | None = None  # 定义版本
     field_7: str | None = None  # 生效批次
 
+class SchemaVersionViewEntry(BaseModel):
+    """结构版本诊断记录明细结构。"""
+
+    field_0: str | None = None  # 视图编号
+    field_1: str | None = None  # 表名称
+    field_2: str | None = None  # 定义版本
+    field_3: str | None = None  # 自然顺序
+    field_4: str | None = None  # 是否当前
+    field_5: str | None = None  # 版本来源
+    field_6: str | None = None  # 当前来源
+    field_7: str | None = None  # 冲突标记
+
+
 class DataPublishEntry(BaseModel):
     """发布版本明细结构。"""
 

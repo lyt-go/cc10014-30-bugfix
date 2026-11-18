@@ -7,6 +7,7 @@
       </div>
       <div class="page-actions">
         <button class="btn primary" data-testid="open-create" type="button" @click="openCreate">登记结构定义</button>
+        <RouterLink class="btn" to="/schema_version_view" data-testid="open-version-view">结构版本诊断视图</RouterLink>
         <button class="btn" data-testid="export" type="button" @click="exportRows">导出结构注册清单</button>
       </div>
     </header>
@@ -74,6 +75,7 @@
 
     <footer class="page-foot">
       <span>共 {{ total }} 条结构注册记录</span>
+      <span v-if="successMessage" class="success-text">{{ successMessage }}</span>
       <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
     </footer>
   </section>
@@ -95,6 +97,7 @@ const metricNames = ["结构定义总数", "待校验定义", "已生效定义"]
 const rows = ref<Row[]>([])
 const total = ref(0)
 const errorMessage = ref('')
+const successMessage = ref('')
 const filters = ref<Record<string, string>>({})
 const filterFields = columns.slice(0, 3)
 const showCreate = ref(false)
@@ -137,6 +140,7 @@ function openCreate() {
 async function submitCreate() {
   creating.value = true
   errorMessage.value = ''
+  successMessage.value = ''
   try {
     const response = await request(ENDPOINT, {
       method: 'POST', body: JSON.stringify(createValues.value),
@@ -144,6 +148,7 @@ async function submitCreate() {
     const payload = await response.json()
     if (!response.ok || !payload.ok) throw new Error(payload.message || '登记失败')
     showCreate.value = false
+    successMessage.value = '结构定义已登记，可进入结构版本诊断视图复核定义版本结果'
     await reload()
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '登记失败'
@@ -186,3 +191,9 @@ async function reload() {
 
 onMounted(reload)
 </script>
+
+<style scoped>
+.success-text {
+  color: #047857;
+}
+</style>
